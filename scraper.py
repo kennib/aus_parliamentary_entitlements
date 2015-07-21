@@ -39,12 +39,22 @@ def get_headers(pdf, page):
 		) for header in horizontal_rects.values()]
 
 	# Find the text in all the text boxes
-	headers = [[line.text.strip()
+	headers = [[line
 			for line in pdf.pq(page+' *:in_bbox("{}, {}, {}, {}")'.format(*box))
 			if line.text
 		] for box in header_rects]
 	
 	return headers
+
+def get_table_data(header_line, table_line):
+	data = {header.text.strip(): None for header in header_line}
+	for header in header_line:
+		for datum in table_line:
+			if float(datum.get('x0')) >= float(header.get('x0')) \
+			and float(datum.get('x0')) <= float(header.get('x1')):
+				data[header.text.strip()] = datum.text.strip()
+	
+	return data
 
 tables = defaultdict(dict)
 for pdf in pdfs:
@@ -62,41 +72,44 @@ for pdf in pdfs:
 		# Sort the lines
 		sorted_lines = sorted(lines.items())[::-1]
 
-		# Find the table data
+		# Initial table data
+		table = None
 		category = []
 		headers = get_headers(pdf, page)
+		is_first_heading = True
 		header_line = None
-		before_headers = True
+
+		# Find the table data
 		for y, line in sorted_lines:
-			# Find the category of the table
-			if before_headers:
-				line_text = [box.text.strip() for x, box in sorted(line.items()) if box.text]
-				if line_text in headers:
-					before_headers = False
-					header_line = line.values()
-					category = tuple(category)
-					tables[category]['data'] = []
-				else:
+			line_text = [box.text.strip() for box in line.values()]
+			table_data = get_table_data(header_line, line.values()) if header_line else {}
+
+			#  Are we reading a heading, table header or table data?
+			is_table_header = line.values() in headers
+			is_table_data = not is_first_heading and any(table_data.values())
+			is_heading = not (is_table_header or is_table_data)
+
+			# If at a heading then add to the category list
+			if is_heading:
+				if is_first_heading:
 					category += line_text
-
-			# Get each line of the table
-			else:
-				table_line = {}
-				for x, box in line.items():
-					for header in header_line:
-						if x >= float(header.get('x0')) and x <= float(header.get('x1')):
-							table_line[header.text.strip()] = box.text.strip()
-						if header not in table_line:
-							header = None
-
-				tables[category]['data'].append(table_line)
-
-		print page
-		for y, line in sorted_lines:
-			print [box.text.strip() for box in line.values()]
-			print line.values()
-			print
-		print "-"*30
+				else:
+					subcategory = line_text
+			
+			# If at a table header then initialize table data
+			elif is_table_header:
+				header_line = line.values()
+				if is_first_heading:
+						is_first_heading = False
+						subcategory = category[-1:]
+						category = category[:-1]
+				
+				table = tuple(category+subcategory)
+				tables[table]['data'] = []
+			
+			# If at table data the append to the table
+			elif is_table_data:
+				tables[table]['data'].append(table_data)
 
 for category in tables:
 	print category
