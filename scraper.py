@@ -86,7 +86,7 @@ for pdf in pdfs:
 
 			#  Are we reading a heading, table header or table data?
 			is_table_header = line.values() in headers
-			is_table_data = not is_first_heading and any(table_data.values())
+			is_table_data = not (is_first_heading or ('Amount' in table_data and table_data['Amount'] is None))
 			is_heading = not (is_table_header or is_table_data)
 
 			# If at a heading then add to the category list
