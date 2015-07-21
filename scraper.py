@@ -105,7 +105,7 @@ for pdf in pdfs:
 						category = category[:-1]
 				
 				table = tuple(category+subcategory)
-				tables[table]['data'] = []
+				if 'data' not in tables[table]: tables[table]['data'] = []
 			
 			# If at table data the append to the table
 			elif is_table_data:
