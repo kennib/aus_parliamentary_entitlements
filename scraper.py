@@ -50,8 +50,8 @@ def get_table_data(header_line, table_line):
 	data = {header.text.strip(): None for header in header_line}
 	for header in header_line:
 		for datum in table_line:
-			if float(datum.get('x0')) >= float(header.get('x0')) \
-			and float(datum.get('x0')) <= float(header.get('x1')):
+			if float(datum.get('x0')) >= float(header.get('x0'))-5 \
+			and float(datum.get('x0')) <= float(header.get('x1'))+5:
 				data[header.text.strip()] = datum.text.strip()
 	
 	return data
