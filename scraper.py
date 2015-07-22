@@ -141,3 +141,5 @@ for url in urls:
 
 	# Extract data
 	read_pdf(pdf)
+
+	del pdf
