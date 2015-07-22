@@ -18,7 +18,7 @@ links = root.cssselect("tr td:first-child a")
 urls = [link.get('href') for link in links]
 
 # Download the PDFs
-pdfs = [pdfquery.PDFQuery(StringIO(urllib2.urlopen(url).read())) for url in urls[:1]]
+pdfs = [pdfquery.PDFQuery(StringIO(urllib2.urlopen(url).read())) for url in urls]
 for pdf in pdfs: pdf.load()
 
 # Find the relevant information in the PDFs
@@ -57,7 +57,6 @@ def get_table_data(header_line, table_line):
 	
 	return data
 
-data = []
 for pdf in pdfs:
 	num_pages = pdf.doc.catalog['Pages'].resolve()['Count']
 	for page in range(num_pages):
@@ -130,10 +129,6 @@ for pdf in pdfs:
 					'subcategory': subcategory
 				})
 
-				# Remember transaction details data
 				if 'Transaction Details' in data_kind:
-					data.append(table_data)
-
-for datum in data:
-	# Write out to the sqlite database using scraperwiki library
-	scraperwiki.sqlite.save(unique_keys=[], data=datum)
+					# Write out to the sqlite database using scraperwiki library
+					scraperwiki.sqlite.save(unique_keys=[], data=datum)
