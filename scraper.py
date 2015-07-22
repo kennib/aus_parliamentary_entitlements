@@ -17,10 +17,6 @@ root = lxml.html.fromstring(html)
 links = root.cssselect("tr td:first-child a")
 urls = [link.get('href') for link in links]
 
-# Download the PDFs
-pdfs = [pdfquery.PDFQuery(StringIO(urllib2.urlopen(url).read())) for url in urls]
-for pdf in pdfs: pdf.load()
-
 # Find the relevant information in the PDFs
 def get_headers(pdf, page):
 	# Find all the rects
@@ -57,7 +53,12 @@ def get_table_data(header_line, table_line):
 	
 	return data
 
-for pdf in pdfs:
+# Download and read each PDF url
+for url in urls:
+	# Download the PDF
+	pdf = pdfquery.PDFQuery(StringIO(urllib2.urlopen(url).read()))
+	pdf.load()
+	
 	num_pages = pdf.doc.catalog['Pages'].resolve()['Count']
 	for page in range(num_pages):
 		page = 'LTPage[pageid="{}"]'.format(page)
