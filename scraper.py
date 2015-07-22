@@ -132,4 +132,4 @@ for url in urls:
 
 				if 'Transaction Details' in data_kind:
 					# Write out to the sqlite database using scraperwiki library
-					scraperwiki.sqlite.save(unique_keys=[], data=datum)
+					scraperwiki.sqlite.save(unique_keys=[], data=table_data)
