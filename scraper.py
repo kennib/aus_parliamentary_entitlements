@@ -135,7 +135,5 @@ for pdf in pdfs:
 					data.append(table_data)
 
 for datum in data:
-	print datum
-
-# Write out to the sqlite database using scraperwiki library
-# scraperwiki.sqlite.save(unique_keys=['name'], data={"name": "susan", "occupation": "software developer"})
+	# Write out to the sqlite database using scraperwiki library
+	scraperwiki.sqlite.save(unique_keys=[], data=datum)
