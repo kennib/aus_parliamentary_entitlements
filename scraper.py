@@ -5,6 +5,7 @@ import pdfquery
 
 from StringIO import StringIO
 from collections import defaultdict
+import datetime
 
 ENTITLEMENTS_PAGE = "http://www.finance.gov.au/publications/parliamentarians-reporting/parliamentarians-expenditure-P34/"
 
@@ -107,12 +108,20 @@ for pdf in pdfs:
 			# If at table data the append to the table
 			elif is_table_data:
 				# Get metadata
-				date, name, data_kind, category = metadata[:4]
+				report_date, name, data_kind, category = metadata[:4]
 				subcategory = metadata[4] if len(metadata) >= 5 else None
-				
+
+				# Parse dates
+				report_date_from = report_date.split('to ')[0]+report_date[-4:]
+				report_date_from = datetime.datetime.strptime(report_date_from, '%d %B %Y').date()
+				report_date_to = report_date.split('to ')[1]
+				report_date_to = datetime.datetime.strptime(report_date_to, '%d %B %Y').date()
+
 				# Add to table data
-				table_data.update({'date': date,
+				table_data.update({
 					'name': name,
+					'report_date_from': report_date_from.isoformat(),
+					'report_date_to': report_date_to.isoformat(),
 					'category': category,
 					'subcategory': subcategory
 				})
