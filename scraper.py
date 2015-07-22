@@ -53,14 +53,7 @@ def get_table_data(header_line, table_line):
 	
 	return data
 
-# Download and read each PDF url
-for url in urls:
-	print url
-
-	# Download the PDF
-	pdf = pdfquery.PDFQuery(StringIO(urllib2.urlopen(url).read()))
-	pdf.load()
-	
+def read_pdf(pdf):
 	num_pages = pdf.doc.catalog['Pages'].resolve()['Count']
 	for page in range(num_pages):
 		print "Page {:02}".format(page)
@@ -137,3 +130,14 @@ for url in urls:
 				if 'Transaction Details' in data_kind:
 					# Write out to the sqlite database using scraperwiki library
 					scraperwiki.sqlite.save(unique_keys=[], data=table_data)
+
+# Download and read each PDF url
+for url in urls:
+	print url
+
+	# Download the PDF
+	pdf = pdfquery.PDFQuery(StringIO(urllib2.urlopen(url).read()))
+	pdf.load()
+
+	# Extract data
+	read_pdf(pdf)
