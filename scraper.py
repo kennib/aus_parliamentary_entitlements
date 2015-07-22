@@ -52,7 +52,7 @@ def get_table_data(header_line, table_line):
 		for datum in table_line:
 			if float(datum.get('x0')) >= float(header.get('x0'))-5 \
 			and float(datum.get('x0')) <= float(header.get('x1'))+5:
-				data[header.text.strip()] = datum.text.strip()
+				data[header.text.strip().lower()] = datum.text.strip()
 	
 	return data
 
@@ -86,7 +86,7 @@ for pdf in pdfs:
 
 			#  Are we reading a heading, table header or table data?
 			is_table_header = line.values() in headers
-			is_table_data = not (is_first_heading or ('Amount' in table_data and table_data['Amount'] is None))
+			is_table_data = not (is_first_heading or ('amount' in table_data and table_data['amount'] is None))
 			is_heading = not (is_table_header or is_table_data)
 
 			# If at a heading then add to the category list
@@ -106,8 +106,8 @@ for pdf in pdfs:
 			
 			# If at table data the append to the table
 			elif is_table_data:
-				table_data['Date'], table_data['Name'], data_kind, table_data['Category'] = (category+subcategory)[:4]
-				table_data['Subcategory'], = subcategory if len(category+subcategory) >= 5 else [None]
+				table_data['date'], table_data['name'], data_kind, table_data['category'] = (category+subcategory)[:4]
+				table_data['subcategory'], = subcategory if len(category+subcategory) >= 5 else [None]
 				if 'Transaction Details' in data_kind:
 					data.append(table_data)
 
