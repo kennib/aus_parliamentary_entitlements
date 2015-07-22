@@ -56,9 +56,10 @@ def get_table_data(header_line, table_line):
 def read_pdf(pdf):
 	num_pages = pdf.doc.catalog['Pages'].resolve()['Count']
 	for page in range(num_pages):
+		pdf.load(page)
 		print "Page {:02}".format(page)
 
-		page = 'LTPage[pageid="{}"]'.format(page)
+		page = 'LTPage[pageid="{}"]'.format(page+1)
 		# Find all the text
 		texts = [box for box in pdf.pq(page+' *') if box.text]
 		
@@ -137,7 +138,6 @@ for url in urls:
 
 	# Download the PDF
 	pdf = pdfquery.PDFQuery(StringIO(urllib2.urlopen(url).read()))
-	pdf.load()
 
 	# Extract data
 	read_pdf(pdf)
