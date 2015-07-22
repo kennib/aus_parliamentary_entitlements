@@ -56,7 +56,7 @@ def get_table_data(header_line, table_line):
 	
 	return data
 
-tables = defaultdict(dict)
+data = []
 for pdf in pdfs:
 	num_pages = pdf.doc.catalog['Pages'].resolve()['Count']
 	for page in range(num_pages):
@@ -103,18 +103,16 @@ for pdf in pdfs:
 						is_first_heading = False
 						subcategory = category[-1:]
 						category = category[:-1]
-				
-				table = tuple(category+subcategory)
-				if 'data' not in tables[table]: tables[table]['data'] = []
 			
 			# If at table data the append to the table
 			elif is_table_data:
-				tables[table]['data'].append(table_data)
+				table_data['Date'], table_data['Name'], data_kind, table_data['Category'] = (category+subcategory)[:4]
+				table_data['Subcategory'], = subcategory if len(category+subcategory) >= 5 else [None]
+				if 'Transaction Details' in data_kind:
+					data.append(table_data)
 
-for category in tables:
-	print category
-	for datum in tables[category]['data']:
-		print datum
-	print
+for datum in data:
+	print datum
+
 # Write out to the sqlite database using scraperwiki library
 # scraperwiki.sqlite.save(unique_keys=['name'], data={"name": "susan", "occupation": "software developer"})
