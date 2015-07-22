@@ -117,6 +117,10 @@ for pdf in pdfs:
 				report_date_to = report_date.split('to ')[1]
 				report_date_to = datetime.datetime.strptime(report_date_to, '%d %B %Y').date()
 
+				# Parse numerical values
+				if table_data.get('amount'):
+					table_data['amount'] = table_data['amount'].translate(None, '$,^*')
+
 				# Add to table data
 				table_data.update({
 					'name': name,
