@@ -74,7 +74,7 @@ for pdf in pdfs:
 
 		# Initial table data
 		table = None
-		category = []
+		metadata = []
 		headers = get_headers(pdf, page)
 		is_first_heading = True
 		header_line = None
@@ -91,23 +91,33 @@ for pdf in pdfs:
 
 			# If at a heading then add to the category list
 			if is_heading:
+				# For the first heading all of the metadata is relevant
 				if is_first_heading:
-					category += line_text
+					metadata += line_text
+				# Subsequent metadata is all of the previous metadata except the last heading
 				else:
-					subcategory = line_text
+					metadata = metadata[:-1] + line_text
 			
 			# If at a table header then initialize table data
 			elif is_table_header:
 				header_line = line.values()
 				if is_first_heading:
 						is_first_heading = False
-						subcategory = category[-1:]
-						category = category[:-1]
 			
 			# If at table data the append to the table
 			elif is_table_data:
-				table_data['date'], table_data['name'], data_kind, table_data['category'] = (category+subcategory)[:4]
-				table_data['subcategory'], = subcategory if len(category+subcategory) >= 5 else [None]
+				# Get metadata
+				date, name, data_kind, category = metadata[:4]
+				subcategory = metadata[4] if len(metadata) >= 5 else None
+				
+				# Add to table data
+				table_data.update({'date': date,
+					'name': name,
+					'category': category,
+					'subcategory': subcategory
+				})
+
+				# Remember transaction details data
 				if 'Transaction Details' in data_kind:
 					data.append(table_data)
 
