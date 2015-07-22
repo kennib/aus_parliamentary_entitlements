@@ -63,7 +63,7 @@ for url in urls:
 	
 	num_pages = pdf.doc.catalog['Pages'].resolve()['Count']
 	for page in range(num_pages):
-		print "Page", page
+		print "Page {:02}".format(page)
 
 		page = 'LTPage[pageid="{}"]'.format(page)
 		# Find all the text
@@ -137,4 +137,3 @@ for url in urls:
 				if 'Transaction Details' in data_kind:
 					# Write out to the sqlite database using scraperwiki library
 					scraperwiki.sqlite.save(unique_keys=[], data=table_data)
-	print
