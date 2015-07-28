@@ -130,7 +130,7 @@ def read_pdf(pdf):
 
 				if 'Transaction Details' in data_kind:
 					# Write out to the sqlite database using scraperwiki library
-					scraperwiki.sqlite.save(unique_keys=[], data=table_data)
+					scraperwiki.sqlite.save(unique_keys=['name', 'category', 'subcategory', 'details', 'report_date_from', 'report_date_to'], data=table_data)
 
 # Download and read each PDF url
 for url in urls:
