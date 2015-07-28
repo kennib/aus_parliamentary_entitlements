@@ -128,7 +128,7 @@ def read_pdf(pdf):
 					'subcategory': subcategory
 				})
 
-				if 'Transaction Details' in data_kind and table_data.get('details', '') != '' and table_data.get('details') != 'Aggregated Total':
+				if 'Transaction Details' in data_kind and table_data.get('details', '') != '':
 					# Write out to the sqlite database using scraperwiki library
 					scraperwiki.sqlite.save(unique_keys=['name', 'category', 'subcategory', 'details', 'report_date_from', 'report_date_to'], data=table_data)
 
